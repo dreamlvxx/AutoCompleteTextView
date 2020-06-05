@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, data)
         actv_content.setAdapter(adapter)
-        val t = MyTokenizer(';')
-        actv_content.setTokenizer(t)
+        val tt = CommonTokenizer(';')
+        actv_content.setTokenizer(tt)
     }
 }
