@@ -1,8 +1,10 @@
 package com.dream.autocompletetextview;
 
+import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.BackgroundColorSpan;
 import android.util.Log;
 import android.widget.MultiAutoCompleteTextView;
 
@@ -70,15 +72,21 @@ public class CommonTokenizer implements MultiAutoCompleteTextView.Tokenizer {
         if (i > 0 && text.charAt(i - 1) == mSpliteChar) {
             return text;
         } else {
-            //如果匹配返回的文本属于富文本，需要还原样式(传进来的text会被退化成String),然后加分隔符
+            //如果匹配返回的文本属于富文本，需要还原样式(传进来的text会被退化成String)或者自己定义一些样式,然后加分隔符
             if (text instanceof Spanned) {
                 SpannableString sp = new SpannableString(text + String.valueOf(mSpliteChar) + " ");
+                BackgroundColorSpan colorSpan = new BackgroundColorSpan(Color.parseColor("#AC00FF30"));
+                sp.setSpan(colorSpan, 9, sp.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 TextUtils.copySpansFrom((Spanned) text, 0, text.length(),
                         Object.class, sp, 0);
                 return sp;
             } else {
+                //在这里其实我们可以给文本定义一些样式
+                SpannableString sp = new SpannableString(text + String.valueOf(mSpliteChar) + " ");
+                BackgroundColorSpan colorSpan = new BackgroundColorSpan(Color.parseColor("#AC00FF30"));
+                sp.setSpan(colorSpan, 0, sp.length() - 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 // text为纯文本，直接加上分隔符
-                return text + String.valueOf(mSpliteChar) + " ";
+                return sp;
             }
         }
     }
