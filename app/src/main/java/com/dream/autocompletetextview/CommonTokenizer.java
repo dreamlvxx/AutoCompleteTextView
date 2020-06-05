@@ -9,7 +9,7 @@ import android.widget.MultiAutoCompleteTextView;
 public class CommonTokenizer implements MultiAutoCompleteTextView.Tokenizer {
     public final static String TAG = "xxx";
 
-    private char mSpliteChar = ';';
+    private char mSpliteChar;
 
     public CommonTokenizer(char mSpliteChar) {
         this.mSpliteChar = mSpliteChar;
@@ -53,7 +53,6 @@ public class CommonTokenizer implements MultiAutoCompleteTextView.Tokenizer {
                 i++;
             }
         }
-
         return len;
     }
 
@@ -62,27 +61,23 @@ public class CommonTokenizer implements MultiAutoCompleteTextView.Tokenizer {
     public CharSequence terminateToken(CharSequence text) {
         int i = text.length();
 
-        // 去掉原始匹配的数据的末尾空格
+        // 找到第一个不是空格的字符
         while (i > 0 && text.charAt(i - 1) == ' ') {
             i--;
         }
 
-        // // 判断原始匹配的数据去掉末尾空格后是否含有逗号，有则立即返回
+        // 判断第一个不是空格的字符是否等于分隔符,如果是就直接返回，如果不是加一个分隔符
         if (i > 0 && text.charAt(i - 1) == mSpliteChar) {
             return text;
         } else {
-            // CharSequence类型的数据有可能是富文本SpannableString类型
-            // 故需要进行判断
+            //如果匹配返回的文本属于富文本，需要还原样式(传进来的text会被退化成String),然后加分隔符
             if (text instanceof Spanned) {
-                // 创建一个新的SpannableString，传进来的text会被退化成String，
-                // 导致sp中丢失掉了text中的样式配置
                 SpannableString sp = new SpannableString(text + String.valueOf(mSpliteChar) + " ");
-                // 故需要借助TextUtils.copySpansFrom从text中复制原来的样式到新的sp中，
-                // 以保持原先样式不变情况下添加一个逗号和空格
                 TextUtils.copySpansFrom((Spanned) text, 0, text.length(),
                         Object.class, sp, 0);
                 return sp;
-            } else {        // text为纯文本，直接加上逗号和空格
+            } else {
+                // text为纯文本，直接加上分隔符
                 return text + String.valueOf(mSpliteChar) + " ";
             }
         }
